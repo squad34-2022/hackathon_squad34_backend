@@ -3,23 +3,57 @@ const userRouter = new Router()
 const UserModel = require("../models/userModel")
 
 userRouter.get("/", async (req,res) => {
-  const allUsers = await UserModel.find()
-  res.json("type: GET")
+  try {
+    const allUsers = await UserModel.find()
+    res.json(allUsers)
+  } catch (err){
+    res.status(500).send("Error on application")
+    console.log(err)
+  }
 })
 
-userRouter.post("/post", async (req,res) => {
-  const allUsers = await UserModel.find()
-  res.json("type: POST")
+userRouter.get("/:id", async(req, res) => {
+  const { id } = req.params
+  try {
+    const getUserById = await UserModel.findById(id)
+    res.json(getUserById)
+  } catch (err) {
+    res.status(500).send("Error on application")
+  }
 })
 
-userRouter.put("/put", async (req,res) => {
-  const allUsers = await UserModel.find()
-  res.json("type: PUT")
+userRouter.post("/", async (req,res) => {
+  const { name, email } = req.body
+  try {
+    const newUser = await UserModel.create({ name, email })
+    res.json(newUser) 
+  } catch(err) {
+    res.status(500).send("Error on application")
+    console.log(err)
+  }
 })
 
-userRouter.delete("/delete", async (req,res) => {
-  const allUsers = await UserModel.find()
-  res.json("type: DELETE")
+userRouter.put("/:id", async (req,res) => {
+  const { id } = req.params
+  const { name, email } = req.body
+  try {
+    const updatedUser = await UserModel.findByIdAndUpdate(id, { name, email })
+    res.json(updatedUser)
+  } catch(err) {
+    res.status(500).send("Error on application")
+    console.log(err)
+  }
+})
+
+userRouter.delete("/:id", async (req,res) => {
+  const { id } = req.params
+  try {
+    const deletedUser = await UserModel.findByIdAndDelete(id)
+    res.json(deletedUser)
+  } catch(err) {
+    res.status(500).send("Error on application")
+    console.log(err)
+  }
 })
 
 module.exports = userRouter
