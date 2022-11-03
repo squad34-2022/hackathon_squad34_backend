@@ -2,7 +2,7 @@ const { Router, json } = require("express");
 const CourseModel = require("../models/courseModel");
 const courseRouter = new Router();
 
-courseRouter.get("/courses", async (req, res) => {
+courseRouter.get("/", async (req, res) => {
   try {
     const allCourses = await CourseModel.find();
     res.status(200).json({ allCourses });
@@ -11,7 +11,7 @@ courseRouter.get("/courses", async (req, res) => {
   }
 });
 
-courseRouter.get("/courses/:id", async (req, res) => {
+courseRouter.get("/:id", async (req, res) => {
   const { id } = req.params.id;
   try {
     const getCourseById = await CourseModel.findOne({ _id: id });
@@ -25,7 +25,7 @@ courseRouter.get("/courses/:id", async (req, res) => {
   }
 });
 
-courseRouter.post("/courses", async (req, res) => {
+courseRouter.post("/", async (req, res) => {
   const { name, type, author, duration, link } = req.body;
 
   if (!name) {
@@ -69,7 +69,7 @@ courseRouter.post("/courses", async (req, res) => {
   }
 });
 
-courseRouter.patch("/courses/:id", async (req, res) => {
+courseRouter.patch("/:id", async (req, res) => {
   const { id } = req.params.id;
   const { name, type, author, duration, link } = req.body;
   const course = {
@@ -91,7 +91,7 @@ courseRouter.patch("/courses/:id", async (req, res) => {
   }
 });
 
-courseRouter.delete("/courses/:id", async (req, res) => {
+courseRouter.delete("/:id", async (req, res) => {
   const { id } = req.params.id;
   const course = await CourseModel.findOne({ _id: id });
   if (!course) {
