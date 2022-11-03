@@ -5,16 +5,16 @@ const courseRouter = new Router();
 courseRouter.get("/", async (req, res) => {
   try {
     const allCourses = await CourseModel.find();
-    res.status(200).json({ allCourses });
+    res.status(200).json(allCourses);
   } catch (error) {
     res.status(500).json({ error: error });
   }
 });
 
 courseRouter.get("/:id", async (req, res) => {
-  const { id } = req.params.id;
+  const { id } = req.params;
   try {
-    const getCourseById = await CourseModel.findOne({ _id: id });
+    const getCourseById = await CourseModel.findById(id);
     if (!getCourseById) {
       res.status(424).json({ message: "Course not found" });
       return;
@@ -70,7 +70,7 @@ courseRouter.post("/", async (req, res) => {
 });
 
 courseRouter.patch("/:id", async (req, res) => {
-  const { id } = req.params.id;
+  const { id } = req.params;
   const { name, type, author, duration, link } = req.body;
   const course = {
     name,
@@ -92,7 +92,7 @@ courseRouter.patch("/:id", async (req, res) => {
 });
 
 courseRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params.id;
+  const { id } = req.params;
   const course = await CourseModel.findOne({ _id: id });
   if (!course) {
     res.status(424).json({ message: "Course not found." });
