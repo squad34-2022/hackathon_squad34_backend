@@ -4,7 +4,6 @@ const CourseSchema = new mongoose.Schema({
   name: String,
   type: String,
   author: String,
-  duration: Number,
   link: String,
 });
 

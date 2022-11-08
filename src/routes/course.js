@@ -26,7 +26,7 @@ courseRouter.get("/:id", async (req, res) => {
 });
 
 courseRouter.post("/", async (req, res) => {
-  const { name, type, author, duration, link } = req.body;
+  const { name, type, author, link } = req.body;
 
   if (!name) {
     res.status(422).json({ error: "Name is required." });
@@ -43,11 +43,6 @@ courseRouter.post("/", async (req, res) => {
     return;
   }
 
-  if (!duration) {
-    res.status(422).json({ error: "Duration is required." });
-    return;
-  }
-
   if (!link) {
     res.status(422).json({ error: "Link is required." });
     return;
@@ -57,7 +52,6 @@ courseRouter.post("/", async (req, res) => {
     name,
     type,
     author,
-    duration,
     link,
   };
 
@@ -71,12 +65,11 @@ courseRouter.post("/", async (req, res) => {
 
 courseRouter.patch("/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, type, author, duration, link } = req.body;
+  const { name, type, author, link } = req.body;
   const course = {
     name,
     type,
     author,
-    duration,
     link,
   };
   try {
