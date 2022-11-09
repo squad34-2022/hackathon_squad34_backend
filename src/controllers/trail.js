@@ -24,8 +24,8 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { name } = req.body;
-    const newTrail = await Trail.create({ name });
+    const { name, description } = req.body;
+    const newTrail = await Trail.create({ name, description });
     res.json(newTrail);
   } catch (err) {
     res.status(500).send("Error registering the track!" + err);
@@ -36,8 +36,11 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
-    const updatedTrail = await Trail.findByIdAndUpdate(id, { name });
+    const { name, description } = req.body;
+    const updatedTrail = await Trail.findByIdAndUpdate(id, {
+      name,
+      description,
+    });
     res.json(updatedTrail);
   } catch (err) {
     res.status(500).send("Error updating trail" + err);

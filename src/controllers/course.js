@@ -1,4 +1,4 @@
-const { Router, json } = require("express");
+const { Router } = require("express");
 const Course = require("../models/Course");
 const Trail = require("../models/trail");
 const router = new Router();
@@ -71,12 +71,13 @@ router.post("/", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, type, author, link } = req.body;
+    const { name, type, author, link, trail } = req.body;
     const course = {
       name,
       type,
       author,
       link,
+      trail,
     };
     const updatedCourse = await Course.updateOne({ _id: id }, course);
     if (updatedCourse.matchedCount == 0) {
@@ -92,6 +93,7 @@ router.patch("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
+
     const course = await Course.findOne({ _id: id });
 
     const trail = await Trail.findOne(course.trail._id);
@@ -100,10 +102,10 @@ router.delete("/:id", async (req, res) => {
       (course) => course._id.toString() !== id
     );
 
-    trail.courses = [...removeCurse];
-    await trail.save();
+    trail.courses = removeCurse;
 
-    await Course.findByIdAndDelete({ _id: id });
+    await Course.findByIdAndDelete(id);
+    await trail.save();
     res.status(200).json({ message: "Course successfully deleted." });
   } catch (error) {
     res.status(500).json({ error: error });
