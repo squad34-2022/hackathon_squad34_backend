@@ -1,20 +1,21 @@
 const { Router, json } = require("express");
-const CourseModel = require("../models/courseModel");
-const courseRouter = new Router();
+const Course = require("../models/Course");
+const Trail = require("../models/trail");
+const router = new Router();
 
-courseRouter.get("/", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const allCourses = await CourseModel.find();
+    const allCourses = await Course.find();
     res.status(200).json(allCourses);
   } catch (error) {
     res.status(500).json({ error: error });
   }
 });
 
-courseRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+router.get("/:id", async (req, res) => {
   try {
-    const getCourseById = await CourseModel.findById(id);
+    const { id } = req.params;
+    const getCourseById = await Course.findById(id);
     if (!getCourseById) {
       res.status(424).json({ message: "Course not found" });
       return;
@@ -25,55 +26,59 @@ courseRouter.get("/:id", async (req, res) => {
   }
 });
 
-courseRouter.post("/", async (req, res) => {
-  const { name, type, author, link } = req.body;
-
-  if (!name) {
-    res.status(422).json({ error: "Name is required." });
-    return;
-  }
-
-  if (!type) {
-    res.status(422).json({ error: "Type is required." });
-    return;
-  }
-
-  if (!author) {
-    res.status(422).json({ error: "Author is required." });
-    return;
-  }
-
-  if (!link) {
-    res.status(422).json({ error: "Link is required." });
-    return;
-  }
-
-  const newCourse = {
-    name,
-    type,
-    author,
-    link,
-  };
-
+router.post("/", async (req, res) => {
   try {
-    await CourseModel.create(newCourse);
+    const { name, type, author, link, trail } = req.body;
+
+    /* if (!name) {
+      res.status(422).json({ error: "Name is required." });
+      return;
+    }
+
+    if (!type) {
+      res.status(422).json({ error: "Type is required." });
+      return;
+    }
+
+    if (!author) {
+      res.status(422).json({ error: "Author is required." });
+      return;
+    }
+
+    if (!link) {
+      res.status(422).json({ error: "Link is required." });
+      return;
+    }
+    if (!trail) {
+      res.status(422).json({ error: "Trail is required." });
+      return;
+    } */
+
+    const course = await Course.create({ name, type, author, link, trail });
+    await course.save();
+
+    const courseTrail = await Trail.findById(trail);
+
+    courseTrail.courses.push(course._id);
+    await courseTrail.save();
+
     res.status(201).json({ message: "Course successfully created" });
   } catch (error) {
     res.status(500).json({ error: error });
   }
 });
 
-courseRouter.patch("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name, type, author, link } = req.body;
-  const course = {
-    name,
-    type,
-    author,
-    link,
-  };
+router.patch("/:id", async (req, res) => {
   try {
-    const updatedCourse = await CourseModel.updateOne({ _id: id }, course);
+    const { id } = req.params;
+    const { name, type, author, link } = req.body;
+    const course = {
+      name,
+      type,
+      author,
+      link,
+    };
+    const updatedCourse = await Course.updateOne({ _id: id }, course);
     if (updatedCourse.matchedCount == 0) {
       res.status(424).json({ message: "Course not found." });
       return;
@@ -84,20 +89,25 @@ courseRouter.patch("/:id", async (req, res) => {
   }
 });
 
-courseRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  const course = await CourseModel.findOne({ _id: id });
-  if (!course) {
-    res.status(424).json({ message: "Course not found." });
-    return;
-  }
-
+router.delete("/:id", async (req, res) => {
   try {
-    await CourseModel.deleteOne({ _id: id });
+    const { id } = req.params;
+    const course = await Course.findOne({ _id: id });
+
+    const trail = await Trail.findOne(course.trail._id);
+
+    const removeCurse = trail.courses.filter(
+      (course) => course._id.toString() !== id
+    );
+
+    trail.courses = [...removeCurse];
+    await trail.save();
+
+    await Course.findByIdAndDelete({ _id: id });
     res.status(200).json({ message: "Course successfully deleted." });
   } catch (error) {
     res.status(500).json({ error: error });
   }
 });
 
-module.exports = courseRouter;
+module.exports = router;

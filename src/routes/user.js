@@ -1,10 +1,10 @@
 const { Router } = require("express");
-const userRouter = new Router();
-const UserModel = require("../models/userModel");
+const router = new Router();
+const User = require("../models/user");
 
-userRouter.get("/", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const allUsers = await UserModel.find();
+    const allUsers = await User.find();
     res.json(allUsers);
   } catch (err) {
     res.status(500).send("Error on application");
@@ -12,20 +12,20 @@ userRouter.get("/", async (req, res) => {
   }
 });
 
-userRouter.get("/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const getUserById = await UserModel.findById(id);
+    const getUserById = await User.findById(id);
     res.json(getUserById);
   } catch (err) {
     res.status(500).send("Error on application");
   }
 });
 
-userRouter.post("/", async (req, res) => {
+router.post("/", async (req, res) => {
   const { name, email, password } = req.body;
   try {
-    const newUser = await UserModel.create({ name, email, password });
+    const newUser = await User.create({ name, email, password });
     res.json(newUser);
   } catch (err) {
     res.status(500).send("Error on application");
@@ -33,11 +33,11 @@ userRouter.post("/", async (req, res) => {
   }
 });
 
-userRouter.put("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { name, email, password } = req.body;
   try {
-    const updatedUser = await UserModel.findByIdAndUpdate(id, {
+    const updatedUser = await User.findByIdAndUpdate(id, {
       name,
       email,
       password,
@@ -49,10 +49,10 @@ userRouter.put("/:id", async (req, res) => {
   }
 });
 
-userRouter.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const deletedUser = await UserModel.findByIdAndDelete(id);
+    const deletedUser = await User.findByIdAndDelete(id);
     res.json(deletedUser);
   } catch (err) {
     res.status(500).send("Error on application");
@@ -60,4 +60,4 @@ userRouter.delete("/:id", async (req, res) => {
   }
 });
 
-module.exports = userRouter;
+module.exports = router;

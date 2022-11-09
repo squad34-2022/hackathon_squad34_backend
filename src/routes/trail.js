@@ -1,10 +1,10 @@
 const { Router } = require("express");
-const trailRouter = new Router();
-const TrailModel = require("../models/trailModel");
+const router = new Router();
+const Trail = require("../models/trail");
 
-trailRouter.get("/", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const allTrails = await TrailModel.find();
+    const allTrails = await Trail.find();
     res.json(allTrails);
   } catch (err) {
     res.status(500).send("Error querying the trail" + err);
@@ -12,21 +12,20 @@ trailRouter.get("/", async (req, res) => {
   }
 });
 
-trailRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+router.get("/:id", async (req, res) => {
   try {
-    const getTrailById = await TrailModel.findById(id);
+    const { id } = req.params;
+    const getTrailById = await Trail.findById(id);
     res.json(getTrailById);
   } catch (err) {
     res.status(500).send("Error querying trail by id" + err);
   }
 });
 
-trailRouter.post("/", async (req, res) => {
-  const { name } = req.body;
+router.post("/", async (req, res) => {
   try {
-    const newTrail = await TrailModel.create({ name });
-    console.log(newTrail);
+    const { name } = req.body;
+    const newTrail = await Trail.create({ name });
     res.json(newTrail);
   } catch (err) {
     res.status(500).send("Error registering the track!" + err);
@@ -34,11 +33,11 @@ trailRouter.post("/", async (req, res) => {
   }
 });
 
-trailRouter.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
+router.put("/:id", async (req, res) => {
   try {
-    const updatedTrail = await TrailModel.findByIdAndUpdate(id, { name });
+    const { id } = req.params;
+    const { name } = req.body;
+    const updatedTrail = await Trail.findByIdAndUpdate(id, { name });
     res.json(updatedTrail);
   } catch (err) {
     res.status(500).send("Error updating trail" + err);
@@ -46,10 +45,10 @@ trailRouter.put("/:id", async (req, res) => {
   }
 });
 
-trailRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params;
+router.delete("/:id", async (req, res) => {
   try {
-    const deletedTrail = await TrailModel.findByIdAndDelete(id);
+    const { id } = req.params;
+    const deletedTrail = await Trail.findByIdAndDelete(id);
     res.json(deletedTrail);
   } catch (err) {
     res.status(500).send("Error deleting trail" + err);
@@ -57,4 +56,4 @@ trailRouter.delete("/:id", async (req, res) => {
   }
 });
 
-module.exports = trailRouter;
+module.exports = router;
