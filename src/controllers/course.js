@@ -1,4 +1,4 @@
-const { Router, json } = require("express");
+const { Router } = require("express");
 const Course = require("../models/Course");
 const Trail = require("../models/trail");
 const router = new Router();
@@ -102,7 +102,7 @@ router.delete("/:id", async (req, res) => {
       (course) => course._id.toString() !== id
     );
 
-    trail.courses = [...removeCurse];
+    trail.courses = removeCurse;
 
     await Course.findByIdAndDelete(id);
     await trail.save();

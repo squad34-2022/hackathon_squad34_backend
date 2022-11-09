@@ -1,9 +1,12 @@
-const { PORT } = require("./constants");
+require("dotenv").config();
+require("./config/database");
 const express = require("express");
-const users = require("./routes/user");
-const trails = require("./routes/trail");
-const courses = require("./routes/course");
-require("./database");
+
+const { PORT } = process.env;
+
+const users = require("./controllers/user");
+const trails = require("./controllers/trail");
+const courses = require("./controllers/course");
 
 const app = express();
 
