@@ -1,7 +1,12 @@
 const { Router } = require("express");
+
 const Course = require("../models/Course");
 const Trail = require("../models/trail");
+const auth = require("../middlewares/auth");
+
 const router = new Router();
+
+router.use(auth);
 
 router.get("/", async (req, res) => {
   try {

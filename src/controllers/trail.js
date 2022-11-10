@@ -1,7 +1,9 @@
 const { Router } = require("express");
 const router = new Router();
 const Trail = require("../models/trail");
+const auth = require("../middlewares/auth");
 
+router.use(auth);
 router.get("/", async (req, res) => {
   try {
     const allTrails = await Trail.find();
