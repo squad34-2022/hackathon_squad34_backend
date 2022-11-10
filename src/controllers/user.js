@@ -1,9 +1,18 @@
+require("dotenv").config();
 const express = require("express");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const router = express.Router();
 const User = require("../models/user");
-const bcrypt = require("bcrypt");
-const { response } = require("express");
 
+const { SECRET } = process.env;
+
+function generateToken(params = {}) {
+  return jwt.sign(params, SECRET, {
+    expiresIn: 86400,
+  });
+}
 router.get("/", async (req, res) => {
   try {
     const allUsers = await User.find();
@@ -15,23 +24,26 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const { id } = req.params;
   try {
+    const { id } = req.params;
     const getUserById = await User.findById(id);
     res.json(getUserById);
   } catch (err) {
-    res.status(500).send("Error on application");
+    res.status(400).send({ error: "error getting user" });
   }
 });
 
 router.post("/", async (req, res) => {
   const { name, email, password } = req.body;
   try {
-    const newUser = await User.create({ name, email, password });
-    res.json(newUser);
+    if (await User.findOne({ email })) {
+      return res.status(400).send({ error: "User already Exists" });
+    }
+    const user = await User.create({ name, email, password });
+    user.password = undefined;
+    res.json({ user, token: generateToken({ id: user._id }) });
   } catch (err) {
-    res.status(500).send("Error on application");
-    console.log(err);
+    res.status(400).send({ error: "Error on Register User" });
   }
 });
 
@@ -48,36 +60,36 @@ router.post("/login", async (req, res) => {
     return res.status(400).send({ error: "Invalid Password" });
   }
 
-  res.send(user);
+  user.password = undefined;
+
+  res.send({ user, token: generateToken({ id: user._id }) });
 });
 
 router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name, email, password } = req.body;
-
-  const hashPassword = await bcrypt.hash(password, 10);
-
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, {
+    const { id } = req.params;
+    const { name, email, password } = req.body;
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    await User.findByIdAndUpdate(id, {
       name,
       email,
       password: hashPassword,
     });
 
-    res.json(updatedUser);
+    res.status(200).send("User updated successfully");
   } catch (err) {
-    res.status(500).send("Error on application");
-    console.log(err);
+    res.status(400).send({ error: "error update user" });
   }
 });
 
 router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
   try {
+    const { id } = req.params;
     const deletedUser = await User.findByIdAndDelete(id);
     res.json(deletedUser);
   } catch (err) {
-    res.status(500).send("Error on application");
+    res.status(400).send({ error: "error deleting user" });
     console.log(err);
   }
 });

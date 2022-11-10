@@ -1,5 +1,7 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const { SECRET } = require("dotenv").config();
+
+const { SECRET } = process.env;
 
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -21,6 +23,9 @@ module.exports = (req, res, next) => {
   }
 
   jwt.verify(token, SECRET, (err, decoded) => {
-    if (err) res.status(401).send({ error: "Token invalid" });
+    if (err) return res.status(401).send({ error: "Token invalid" });
+
+    req.userId = decoded.id;
+    return next();
   });
 };
