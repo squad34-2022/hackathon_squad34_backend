@@ -3,13 +3,12 @@ const router = new Router();
 const Trail = require("../models/trail");
 const auth = require("../middlewares/auth");
 
-router.use(auth);
 router.get("/", async (req, res) => {
   try {
     const allTrails = await Trail.find();
     res.json(allTrails);
   } catch (err) {
-    res.status(500).send("Error querying the trail" + err);
+    +res.status(500).send("Error querying the trail" + err);
     console.log(err);
   }
 });
@@ -24,10 +23,10 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
-    const { name, description } = req.body;
-    const newTrail = await Trail.create({ name, description });
+    const { title, description } = req.body;
+    const newTrail = await Trail.create({ title, description });
     res.json(newTrail);
   } catch (err) {
     res.status(500).send("Error registering the track!" + err);
@@ -35,14 +34,16 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const { title, description } = req.body;
+
     const updatedTrail = await Trail.findByIdAndUpdate(id, {
-      name,
+      title,
       description,
     });
+
     res.json(updatedTrail);
   } catch (err) {
     res.status(500).send("Error updating trail" + err);
@@ -50,7 +51,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedTrail = await Trail.findByIdAndDelete(id);

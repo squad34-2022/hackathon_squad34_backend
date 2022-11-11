@@ -6,8 +6,6 @@ const auth = require("../middlewares/auth");
 
 const router = new Router();
 
-router.use(auth);
-
 router.get("/", async (req, res) => {
   try {
     const allCourses = await Course.find();
@@ -20,49 +18,49 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const getCourseById = await Course.findById(id);
-    if (!getCourseById) {
+    const course = await Course.findById(id);
+    if (!course) {
       res.status(424).json({ message: "Course not found" });
       return;
     }
-    res.status(200).json(getCourseById);
+    res.status(200).json(course);
   } catch (error) {
     res.status(500).json({ error: error });
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
-    const { name, type, author, link, trail } = req.body;
+    const { title, type, author, link, trail } = req.body;
 
-    /* if (!name) {
-      res.status(422).json({ error: "Name is required." });
-      return;
+    if (!title) {
+      return res.status(422).json({ error: "title is required." });
     }
 
     if (!type) {
-      res.status(422).json({ error: "Type is required." });
-      return;
+      return res.status(422).json({ error: "Type is required." });
     }
 
     if (!author) {
-      res.status(422).json({ error: "Author is required." });
-      return;
+      return res.status(422).json({ error: "Author is required." });
     }
 
     if (!link) {
-      res.status(422).json({ error: "Link is required." });
-      return;
+      return res.status(422).json({ error: "Link is required." });
     }
-    if (!trail) {
-      res.status(422).json({ error: "Trail is required." });
-      return;
-    } */
 
-    const course = await Course.create({ name, type, author, link, trail });
-    await course.save();
+    if (!trail) {
+      return res.status(422).json({ error: "Trail is required." });
+    }
 
     const courseTrail = await Trail.findById(trail);
+
+    if (!courseTrail) {
+      return res.status(401).json({ error: "trail not exists" });
+    }
+
+    const course = await Course.create({ title, type, author, link, trail });
+    await course.save();
 
     courseTrail.courses.push(course._id);
     await courseTrail.save();
@@ -73,12 +71,12 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, type, author, link, trail } = req.body;
+    const { title, type, author, link, trail } = req.body;
     const course = {
-      name,
+      title,
       type,
       author,
       link,
@@ -95,22 +93,35 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
 
     const course = await Course.findOne({ _id: id });
 
+    if (!course) {
+      return res.status(400).json({ error: "Course not found." });
+    }
+
+    if (!course.trail) {
+      await Course.findByIdAndDelete(id);
+
+      return res.status(200).json({ message: "Course successfully deleted." });
+    }
+
     const trail = await Trail.findOne(course.trail._id);
 
-    const removeCurse = trail.courses.filter(
-      (course) => course._id.toString() !== id
-    );
+    if (trail) {
+      const removeCurse = trail.courses.filter(
+        (course) => course._id.toString() !== id
+      );
+      trail.courses = removeCurse;
 
-    trail.courses = removeCurse;
+      await trail.save();
+    }
 
     await Course.findByIdAndDelete(id);
-    await trail.save();
+
     res.status(200).json({ message: "Course successfully deleted." });
   } catch (error) {
     res.status(500).json({ error: error });
