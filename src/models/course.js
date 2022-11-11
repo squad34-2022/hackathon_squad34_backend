@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Schema = new mongoose.Schema({
-  name: {
+  title: {
     type: "String",
     require: true,
   },
@@ -20,7 +20,6 @@ const Schema = new mongoose.Schema({
   trail: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Trail",
-    require: true,
   },
 });
 

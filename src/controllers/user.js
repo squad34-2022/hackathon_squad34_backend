@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 const User = require("../models/user");
+const auth = require("../middlewares/auth");
 
 const { SECRET } = process.env;
 
@@ -13,37 +14,38 @@ function generateToken(params = {}) {
     expiresIn: 86400,
   });
 }
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
-    const allUsers = await User.find();
-    res.json(allUsers);
+    const users = await User.find().select("-password");
+
+    res.json(users);
   } catch (err) {
-    res.status(500).send("Error on application");
+    res.status(401).send("error getting all user");
     console.log(err);
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
-    const getUserById = await User.findById(id);
-    res.json(getUserById);
+    const user = await User.findById(id).select("-password");
+    res.json(user);
   } catch (err) {
-    res.status(400).send({ error: "error getting user" });
+    res.status(401).send({ error: "error getting user by ID" });
   }
 });
 
 router.post("/", async (req, res) => {
-  const { name, email, password } = req.body;
   try {
-    if (await User.findOne({ email })) {
-      return res.status(400).send({ error: "User already Exists" });
+    const { name, email, password } = req.body;
+    if (await User.findOne({ email }).select("password")) {
+      return res.status(401).send({ error: "User already Exists" });
     }
     const user = await User.create({ name, email, password });
-    user.password = undefined;
+    /* user.password = undefined; */
     res.json({ user, token: generateToken({ id: user._id }) });
   } catch (err) {
-    res.status(400).send({ error: "Error on Register User" });
+    res.status(401).send({ error: "Error on Register User" });
   }
 });
 
@@ -53,11 +55,11 @@ router.post("/login", async (req, res) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    return res.status(400).send({ error: "User not found" });
+    return res.status(401).send({ error: "User not found" });
   }
 
   if (!(await bcrypt.compare(password, user.password))) {
-    return res.status(400).send({ error: "Invalid Password" });
+    return res.status(401).send({ error: "Invalid Password" });
   }
 
   user.password = undefined;
@@ -65,7 +67,7 @@ router.post("/login", async (req, res) => {
   res.send({ user, token: generateToken({ id: user._id }) });
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, password } = req.body;
@@ -79,17 +81,18 @@ router.put("/:id", async (req, res) => {
 
     res.status(200).send("User updated successfully");
   } catch (err) {
-    res.status(400).send({ error: "error update user" });
+    res.status(401).send({ error: "error update user" });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedUser = await User.findByIdAndDelete(id);
-    res.json(deletedUser);
+    const user = await User.findByIdAndDelete(id).select("-password");
+
+    res.json(user);
   } catch (err) {
-    res.status(400).send({ error: "error deleting user" });
+    res.status(401).send({ error: "error deleting user" });
     console.log(err);
   }
 });
