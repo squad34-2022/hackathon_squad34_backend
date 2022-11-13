@@ -38,11 +38,14 @@ router.get("/:id", auth, async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    if (await User.findOne({ email }).select("password")) {
+
+    if (await User.findOne({ email })) {
       return res.status(401).send({ error: "User already Exists" });
     }
+
     const user = await User.create({ name, email, password });
-    /* user.password = undefined; */
+    user.password = undefined;
+
     res.json({ user, token: generateToken({ id: user._id }) });
   } catch (err) {
     res.status(401).send({ error: "Error on Register User" });
