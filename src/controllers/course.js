@@ -8,7 +8,10 @@ const router = new Router();
 
 router.get("/", async (req, res) => {
   try {
-    const allCourses = await Course.find();
+    const allCourses = await Course.find().populate({
+      path: "trail",
+      select: "title",
+    });
     res.status(200).json(allCourses);
   } catch (error) {
     res.status(500).json({ error: error });

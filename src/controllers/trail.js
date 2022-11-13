@@ -5,7 +5,7 @@ const auth = require("../middlewares/auth");
 
 router.get("/", async (req, res) => {
   try {
-    const allTrails = await Trail.find();
+    const allTrails = await Trail.find().populate("courses");
     res.json(allTrails);
   } catch (err) {
     +res.status(500).send("Error querying the trail" + err);
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const getTrailById = await Trail.findById(id);
+    const getTrailById = await Trail.findById(id).populate("courses");
     res.json(getTrailById);
   } catch (err) {
     res.status(500).send("Error querying trail by id" + err);
