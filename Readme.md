@@ -12,14 +12,9 @@
 <p>Pensando nas funcionalidades da aplicação (cadastro e login de usuário, cadastro, atualização e deleção de trilhas e cursos), optamos por desenvolver em Node.js pela familiaridade que o squad já tinha com a linguagem, e utilizar o MongoDB como banco de dados por ser um projeto pequeno e pontual que não carece de uma estrutura de dados tão rígida.</p>
 
 <h2>Como rodar o projeto e testar os métodos</h2>
-<p>Baixe o nosso repositório em sua máquina, abra com sua IDE de preferência (utilizamos o VSCode) e, no terminal, dê o comando `npm run dev`. Além disso, também é possível fazer testes pela coleção no <a href="https://www.postman.com/" target="_blank">Postman</a> com as credenciais abaixo:</p>
+<p>Baixe o nosso repositório em sua máquina, abra com sua IDE de preferência (utilizamos o VSCode) e, no terminal, dê o comando "npm i" para instalar as dependências necessárias, e em seguida "npm run dev". Além disso, também é possível fazer testes pela coleção no <a href="https://www.postman.com/" target="_blank">Postman</a> com as credenciais abaixo:</p>
 <ul>
 <li>Email: equipe34.2022@gmail.com</li>
 <li>Senha: Grupo34@</li>
 </ul>
-
-<h2>Links úteis</h2>
-<ul>
-<li>Deploy (em breve)</li>
-<ul>
 
