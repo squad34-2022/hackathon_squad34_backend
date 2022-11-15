@@ -22,7 +22,7 @@
 <h3>Necessário criar o <span>.env</span> na raiz do projeto</h3>
 <ul>
 <li>PORT= 5000</li>
-<li>MONGO_URI=mongodb+srv://<USER>:<PASSWORD>cluster0.hzybtw0.mongodb.net/?retryWrites=true&w=majority</li>
+<li>MONGO_URI=mongodb+srv://(USER):(PASSWORD)cluster0.hzybtw0.mongodb.net/?retryWrites=true&w=majority</li>
 <li>SECRET= squad34</li>
 </ul>
 <h2> Qualquer dúvida neste <a href="https://pastebin.com/z9ee5gyn" target="_blank">link</a> tem os dados necessários!</h2>
