@@ -25,5 +25,6 @@
 <li>MONGO_URI=mongodb+srv://(USER):(PASSWORD)cluster0.hzybtw0.mongodb.net/?retryWrites=true&w=majority</li>
 <li>SECRET= squad34</li>
 </ul>
-<h2> Qualquer dúvida neste <a href="https://pastebin.com/z9ee5gyn" target="_blank">link</a> tem os dados necessários!</h2>
+<h2> Qualquer dúvida, neste <a href="https://pastebin.com/z9ee5gyn" target="_blank">link</a> tem os dados necessários!
+Basta copiar e colar</h2>
 
