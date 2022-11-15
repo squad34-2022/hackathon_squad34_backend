@@ -26,5 +26,5 @@
 <li>SECRET= squad34</li>
 </ul>
 <h2> Qualquer dúvida, neste <a href="https://pastebin.com/z9ee5gyn" target="_blank">link</a> tem os dados necessários!
-Basta copiar e colar</h2>
+Basta copiar e colar.</h2>
 
